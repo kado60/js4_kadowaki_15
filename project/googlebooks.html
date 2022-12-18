@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="css/sample.css">
+<title>GoogleBook検索</title>
+</head>
+<body>
+
+  <header>
+    <h1>初学者のあなたに</h1>
+    <h2 id="iiwake">本棚へ</h2>
+    <p>
+      <input type="text" id="keyword" value="">
+      <button id="readbook" >検索 & 本棚に登録</button>
+      <!-- <button id="favorite">本棚に登録</button> -->
+      <button id="delete" >やり直し</button>
+    </p>
+  </header>
+  
+  <main>
+    <p id="content"></p>
+
+
+  </main>
+
+<!-- JQueryを使えるようにする -->
+<script src="js/jquery-3.5.1.min.js"></script>
+
+<!-- Firebaseを使えるようにする -->
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved }
+        from "https://cdnjs.cloudflare.com/ajax/libs/firebase/9.15.0/firebase-database.js"; //「.min」を消す必要あり。
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "",
+    authDomain: "fir-bookshelf-8db86.firebaseapp.com",
+    projectId: "fir-bookshelf-8db86",
+    storageBucket: "fir-bookshelf-8db86.appspot.com",
+    messagingSenderId: "906116085639",
+    appId: "1:906116085639:web:31c049d00c710611844522"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+
+  // Realtime DBに接続
+  const db = getDatabase(app);
+  // Realtime DB内のbookshelfを使う。bookshelfという場所に格納する。
+  const dbRef = ref(db, "bookshelf");
+
+
+// 手順
+// 1. $.get() を使って 情報を取得する
+// 2. JSONデータ構造を基に本のタイトルを取得する
+// 3. 本のタイトル情報をHTMLに出力する
+// ---ここからは課題！
+// 4. クリックイベントで括る
+// 5. id="keyword"の入力値を取得 → URLの"?q=jquery"の"queryの文字を取得した入力値（変数）に変える"
+// 6. 出版社も表示してみよう！（データ構造はconsole.logで確認！！）
+
+// $.get() を使う[開始]
+$("#readbook").on("click",function(){
+  let kensaku = document.getElementById("keyword").value;
+  console.log(kensaku);
+  $.get("https://www.googleapis.com/books/v1/volumes?q=" + kensaku, function(data){
+    console.log(data);
+    const items = data.items
+    for(let i = 0; i < 3; i++){
+      // console.log(items[i].volumeInfo.title);
+      $("#content").append(`<ul><li>${items[i].volumeInfo.title}</li><li>${items[i].volumeInfo.authors}</li><li>${items[i].volumeInfo.publisher}</li></ul>`)
+      const msg = {
+            booktitle: items[i].volumeInfo.title,};
+            // text: $("#text").val(),
+        // };
+        // console.log(uname, text);
+
+        // newPostRef：只一つに決まるユニークキーを発行する。
+        // 新しいメッセージをnewPostRefに入れる。
+        const newPostRef = push(dbRef);
+        console.log("newPostRef: ", newPostRef);
+        set(newPostRef, msg);
+    }
+  })
+});
+
+
+// 「リストの削除」ボタンで表示リストと検索窓の中身を空にする。
+$("#delete").on("click",function(){
+  $("#content").empty();
+  $("#keyword").val("")
+});
+
+// }
+// logを使いながら、欲しい情報がどこにあるかを探していく。
+// 最低ライン①：データ読み込みがクリックされたら、検索が実行される。
+// 最低ライン②：出版社も表示される。
+// やりたいこと①：売れてる順に表示させたい。
+// やりたいこと②：面白いAPIキーを探してみるのも良いかも。
+// やりたいこと③：本に関するAPIって何がある？
+// やりたいこと④：読みたい本リストを作りたい。
+  // 書名をクリック→→別ページに「読みたい本リスト」が溜まっていく。
+  // 別ページは書棚形式になっていて書影が見える。
+  // 別ページは読んだor読んでいないを自由に変更できる。
+  // 書籍の説明文から「どこで読むべきか」が提示される。最悪、著者の出身地でも良い。
+
+// $.get() を使う[終了]
+
+$("#iiwake").on("click",function(){
+  alert("このボタンを押すと別ページに遷移して、Realtime Databaseに保存された検索結果を呼び出して書影が並ぶ感じになる予定でした……")
+});
+
+</script>
+</body>
+</html>

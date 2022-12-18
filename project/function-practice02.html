@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>演習</title>
+</head>
+<body>
+<script>
+// 正解しているか否かを返す関数 judge() の作成
+
+function judge(my, ans){
+    return [my[0] === ans[0], my[1] === ans[1], my[2] === ans[2]]
+}
+
+const my = [1, 2, 3] // 選択問題のユーザ解答
+const ans = [1, 2, 3] // 選択問題の解答
+
+// 結果表示
+const result = judge(my, ans)
+console.log(result);
+
+
+// 繰り返しの処理にはfor文を使うことができる。
+// 正解しているか否かを返す関数 judge() をfor文を使って作成
+// .pushを使って押し込んでいく（pushメソッド）。
+
+function judge2(my2, ans2){
+    const result2 = []
+    for(let i = 0; i < 3; i++){
+        result2.push (my2[+i] == ans2[i]);
+    }
+    return result2
+}
+
+const my2 = [1, 2, 3] // 選択問題のユーザ解答
+const ans2 = [1, 2, 3] // 選択問題の解答
+
+const result2 = judge2(my2, ans2)
+console.log(result2);
+
+
+</script>
+</body>
+</html>
